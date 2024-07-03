@@ -23,7 +23,7 @@ private:
         });
     }
 
-    void handle_new_connection(std::shared_ptr<tcp::socket> socket) {
+    void handle_new_connection(const std::shared_ptr<tcp::socket>& socket) {
         // Add socket to the list of connected clients
         clients_.push_back(socket);
 
@@ -31,7 +31,7 @@ private:
         read_message(socket);
     }
 
-    void read_message(std::shared_ptr<tcp::socket> socket) {
+    void read_message(const std::shared_ptr<tcp::socket>& socket) {
         auto buffer = std::make_shared<std::vector<char>>(1024);
         socket->async_read_some(boost::asio::buffer(*buffer),
                                 [this, socket, buffer](boost::system::error_code ec, std::size_t length) {
