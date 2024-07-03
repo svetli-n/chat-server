@@ -37,7 +37,7 @@ private:
                                 [this, socket, buffer](boost::system::error_code ec, std::size_t length) {
                                     if (!ec) {
                                         // Broadcast the message to all connected clients
-                                        broadcast_message(buffer->data(), length);
+                                        broadcast_message(buffer->data(), length, socket);
 
                                         // Continue reading messages from the client
                                         read_message(socket);
@@ -48,12 +48,14 @@ private:
                                 });
     }
 
-    void broadcast_message(const char* message, std::size_t length) {
+    void broadcast_message(const char* message, std::size_t length, std::shared_ptr<tcp::socket> sender) {
         for (auto& client : clients_) {
-            boost::asio::async_write(*client, boost::asio::buffer(message, length),
-                                     [](boost::system::error_code /*ec*/, std::size_t /*length*/) {
-                                         // Handle write completion (optional)
-                                     });
+            if (client != sender) {
+                boost::asio::async_write(*client, boost::asio::buffer(message, length),
+                                         [](boost::system::error_code /*ec*/, std::size_t /*length*/) {
+                                             // Handle write completion (optional)
+                                         });
+            }
         }
     }
 
