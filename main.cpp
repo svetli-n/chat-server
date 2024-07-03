@@ -48,7 +48,7 @@ private:
                                 });
     }
 
-    void broadcast_message(const char* message, std::size_t length, std::shared_ptr<tcp::socket> sender) {
+    void broadcast_message(const char* message, std::size_t length, const std::shared_ptr<tcp::socket>& sender) {
         for (auto& client : clients_) {
             if (client != sender) {
                 boost::asio::async_write(*client, boost::asio::buffer(message, length),
